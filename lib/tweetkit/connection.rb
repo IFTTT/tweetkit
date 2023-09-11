@@ -44,6 +44,7 @@ module Tweetkit
         end
 
         conn.request :json
+        conn.response :raise_error
         conn.response :json
       end
 
@@ -59,8 +60,6 @@ module Tweetkit
                  end
 
       Tweetkit::Response::Tweets.new response, connection: connection, twitter_request: { previous_url: @previous_url, previous_query: @previous_query }
-    rescue StandardError => e
-      raise e
     end
 
     def build_fields(options)
