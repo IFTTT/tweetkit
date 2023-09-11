@@ -25,6 +25,7 @@ module Tweetkit
       end
 
       def parse_response(response)
+        @original_response = response
         @response = response.body
       end
 
@@ -57,8 +58,8 @@ module Tweetkit
         @twitter_request = @options[:twitter_request]
       end
 
-      def each(*args, &block)
-        tweets.each(*args, &block)
+      def each(&block)
+        tweets.each(&block)
       end
 
       def last

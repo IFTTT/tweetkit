@@ -28,7 +28,7 @@ module Tweetkit
       request :delete, endpoint, parse_query_and_convenience_headers(options)
     end
 
-    def request(method, endpoint, data, **options)
+    def request(method, endpoint, data)
       url = URI.parse("#{BASE_URL}#{endpoint}")
       @previous_url = url
       @previous_query = data
