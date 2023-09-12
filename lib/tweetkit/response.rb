@@ -103,12 +103,13 @@ module Tweetkit
       end
 
       class Tweet < HashBackedOpenStruct
-        attr_accessor :annotations, :attachments
+        attr_accessor :annotations, :attachments, :geo
 
         def initialize(tweet)
           super
           @annotations = Annotations.new(tweet['context_annotations'], tweet['entities'])
           @attachments = Attachments.new(tweet['attachments'])
+          @geo = Geo.new(tweet['geo'])
         end
 
         def reply_to
@@ -200,8 +201,8 @@ module Tweetkit
               return unless entity_annotations
 
               @annotations = entity_annotations['annotations']&.collect { |annotation| Annotation.new(annotation) }
-              @cashtags = entity_annotations['cashtags']&.collect { |cashtag| Tag.new(cashtag) }
-              @hashtags = entity_annotations['hashtags']&.collect { |hashtag| Tag.new(hashtag) }
+              @cashtags = entity_annotations['cashtags']&.collect { |cashtag| Cashtag.new(cashtag) }
+              @hashtags = entity_annotations['hashtags']&.collect { |hashtag| Hashtag.new(hashtag) }
               @mentions = entity_annotations['mentions']&.collect { |mention| Mention.new(mention) }
               @urls = entity_annotations['urls']&.collect { |url| Url.new(url) }
             end
@@ -216,9 +217,9 @@ module Tweetkit
               end
             end
 
-            class Hashtag < HashBackedOpenStruct; end
-
             class Cashtag < HashBackedOpenStruct; end
+
+            class Hashtag < HashBackedOpenStruct; end
 
             class Mention < HashBackedOpenStruct; end
 
@@ -226,33 +227,7 @@ module Tweetkit
           end
         end
 
-        class Geo
-          attr_accessor :coordinates, :place_id
-
-          def initialize(geo)
-            return unless geo
-
-            @coordinates = Coordinates.new(geo['coordinates'])
-            @place_id = geo['place_id']
-          end
-
-          class Coordinates
-            attr_accessor :coordinates, :type
-
-            def initialize(coordinates)
-              @coordinates = coordinates['coordinates']
-              @type = coordinates['point']
-            end
-
-            def x
-              coordinates[0]
-            end
-
-            def y
-              coordinates[1]
-            end
-          end
-        end
+        class Geo < HashBackedOpenStruct; end
 
         class PublicMetrics < HashBackedOpenStruct; end
       end
@@ -272,7 +247,16 @@ module Tweetkit
 
         class MediaObject < HashBackedOpenStruct; end
 
-        class Place < HashBackedOpenStruct; end
+        class Place < HashBackedOpenStruct
+          attr_accessor :geo
+
+          def initialize(place)
+            super
+            @geo = GeoJSON.new(place['geo'])
+          end
+
+          class GeoJSON < HashBackedOpenStruct; end
+        end
 
         class Poll < HashBackedOpenStruct
           attr_accessor :options

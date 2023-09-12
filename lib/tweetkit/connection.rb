@@ -46,6 +46,7 @@ module Tweetkit
         conn.request :json
         conn.response :raise_error
         conn.response :json
+        # conn.response :logger
       end
 
       response = case method
