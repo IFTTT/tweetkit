@@ -37,7 +37,7 @@ module Tweetkit
             @tweets = [Tweet.new(@response['data'])]
           end
         else
-          @tweets = nil
+          @tweets = []
         end
       end
 
